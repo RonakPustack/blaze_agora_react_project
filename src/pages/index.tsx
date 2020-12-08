@@ -59,7 +59,10 @@ export default function () {
           <Route path="/replay/record/:roomUuid">
             <ReplayPage />
           </Route>
-          <Route exact path="/">
+          <Route path="/:session_id">
+            <Home />
+          </Route>
+          <Route path="/">
             <Home />
           </Route>
         </HashRouter>
