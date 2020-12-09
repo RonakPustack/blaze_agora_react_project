@@ -46,7 +46,7 @@ export const OneToOne = observer(() => {
               role="teacher"
               {...teacherStream}
             />
-            {studentStreams[0]?
+            {studentStreams[0] ?
               <VideoPlayer
                 showClose={false}
                 role="student"

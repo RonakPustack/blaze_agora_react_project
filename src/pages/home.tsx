@@ -57,6 +57,8 @@ function HomePage() {
 
   const appStore = useAppStore();
 
+  const [ mainText, setMainText ] = useState("Validating...");
+
   const { session_id } = useParams();
 
   const handleSetting = (evt: any) => {
@@ -72,30 +74,38 @@ function HomePage() {
   useEffect(() => {
 
     if(session_id){
-      const docPath = `blaze_session/collections/blaze_sessions/${session_id}/meeting/${session_id}`;
+      // Session ID is the meeting ID
+      const docPath = `blaze_session/collections/blaze_sessions/${session_id}`;
 
-      firestore.doc(docPath).get().then((doc : firebase.firestore.DocumentSnapshot) => {
-
+      firestore.doc(docPath).get().then((doc) => {
         if(doc.exists){
           // navigate the user to classroom
-          const meetingData = doc.data();
+          const sessionDoc = doc.data();
 
-          if (meetingData) {
-            const studentName = meetingData.student_name;
-            const teacherName = meetingData.teacher_name;
+          if (sessionDoc) {
+            const instructorId = sessionDoc.instructor_id;
 
-            handleSubmit(session_id, teacherName);
+            firestore.doc(`employees/${instructorId}`).get().then(doc => {
+              const userDoc = doc.data();
+
+              if(userDoc){
+                setMainText("Joining session...");
+                handleSubmit(session_id, userDoc.name);
+              }else{
+                setMainText("Couldn't find user...");
+              }
+
+            });
+
           }
         }else{
-          alert("Invalid meeting id, taking the user back");
+          alert("Invalid meeting ID");
+          window.location.href = "https://new-pustack-blaze.web.app"
         }
       });
     }else{
-      const destinationLocation : String = window.location.href;
-
-      const domainName = destinationLocation.split("/")[0];
-
-      window.location.href = `${domainName}/#/session_id`;
+      alert("Invalid meeting ID");
+      window.location.href = "https://new-pustack-blaze.web.app"
     }
 
   }, []);
@@ -126,7 +136,7 @@ function HomePage() {
     <div className={`flex-container ${uiStore.isElectron ? 'draggable' : 'home-cover-web' }`}>
       {uiStore.isElectron ? null : 
       <div style={{display: "flex"}}>
-        <span style={{fontSize: "17px"}}>{"Joining Class..."}</span>
+        <span style={{fontSize: "18px"}}>{mainText}</span>
       </div>
       }
     </div>

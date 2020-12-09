@@ -143,12 +143,16 @@ export const Nav = observer((props: any) => {
 
   const appStore = useAppStore();
 
+  const roomStore = useRoomStore()
+
   const mediaStore = useMediaStore();
 
   const location = useLocation()
 
+  const { studentStreams } = roomStore;
+
   const role = appStore.roomInfo.userRole
-  const roomName = appStore.roomInfo.roomName
+  const navTitle = studentStreams[0] ? `${studentStreams[0].account}'s Session` : "Student's Session";
 
   const delay = mediaStore.delay
   const time = appStore.time
@@ -163,7 +167,7 @@ export const Nav = observer((props: any) => {
     <>
       <div className={`nav-container ${isElectron ? 'draggable' : ''}`}>
         <div className="class-title">
-          <span className="room-name">{roomName}</span>
+          <span className="room-name">{navTitle}</span>
           {role === 'teacher' ?
             <StartClassButton isBreakout={isBreakout} /> : null}
         </div>
